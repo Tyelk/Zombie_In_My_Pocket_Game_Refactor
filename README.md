@@ -16,11 +16,12 @@ cd Zombie_In_My_Pocket_Game_Refactor
 
 ## Setup
 
-Create and activate a virtual environment, then install the project and pytest:
+Create and activate a virtual environment, then install the project and pytest/coverage:
 
 ```powershell
 python -m pip install -e .
 python -m pip install pytest
+python -m pip install pytest-cov
 ```
 
 ## Run the objective smoke checker
@@ -35,6 +36,18 @@ The smoke checker verifies required paths, non-GUI imports, pytest collection, a
 
 ```powershell
 python -m pytest
+```
+
+## Run the coverage
+
+```powershell
+pytest --cov=zimp
+```
+
+## Create coverage report HTML
+
+```powershell
+pytest --cov=src/zimp --cov-report=html
 ```
 
 ## Run the application
