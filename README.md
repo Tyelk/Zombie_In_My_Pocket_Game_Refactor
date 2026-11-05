@@ -10,8 +10,8 @@ This repository contains the ZIMP game created by "Just a couple of cool guys" f
 
 ## Git Clone
 ```powershell
-git clone https://github.com/Tyelk/
-cd 
+git clone https://github.com/Tyelk/Zombie_Game_Refactor.git
+cd ZIMP
 ```
 
 ## Setup
