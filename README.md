@@ -1,6 +1,6 @@
 # BCDE321 Advanced Programming: Zombies In My Pocket
 
-This repository contains the ZIMP game created by "Just a couple of cool guys" for Assessment 2.
+This repository contains the Zombie In My Pocket (ZIMP) game created by "Just a couple of cool guys" for Assessment 2.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ python -m pip install pytest
 python -m pip install pytest-cov
 ```
 
-## Run the objective smoke checker
+## Run Objective Smoke Checker
 
 ```powershell
 python scripts/smoke_check.py
@@ -32,25 +32,25 @@ python scripts/smoke_check.py
 
 The smoke checker verifies required paths, non-GUI imports, pytest collection, and the baseline tests. It does not calculate marks.
 
-## Run the tests
+## Run Tests
 
 ```powershell
 python -m pytest
 ```
 
-## Run the coverage
+## Run Coverage
 
 ```powershell
 pytest --cov=zimp
 ```
 
-## Create coverage report HTML
+## Create Branch Coverage Report
 
 ```powershell
-pytest --cov=src/zimp --cov-report=html
+pytest --cov=src/zimp --cov-branch --cov-report=html
 ```
 
-## Run the application
+## Run App
 
 ```powershell
 python -m zimp.main
