@@ -1,45 +1,55 @@
+from abc import ABC
+
 from zimp.domain.common.direction import Direction
 from zimp.domain.common.tile_data import TileData
 from zimp.domain.common.tile_effect import TileEffect
 
 
-class Tile:
-    """Tile class used to hold and calculate data for an individual tile.
+class Tile(ABC):
+    """Abstract Tile class used to hold and calculate data for an individual tile.
     Args:
         tile_id (int): ID of the tile.
-        doors (list[Door]): List of doors.
-        tile_effect (TileEffect): Effect of the tile. Defaults to None.
-        is_outside_tile (bool): Whether the tile is outside. Defaults to False.
-        is_exit_tile (bool): Whether the tile is the inside exit tile. Defaults to False.
-        is_entry_tile (bool): Whether the tile is the outside entry tile. Defaults to False.
+        doors (tuple[Direction, ...]): Doors of the tile.
+        tile_effect (TileEffect): Effect of the tile. Defaults to TileEffect.NONE.
     """
 
-    def __init__(self, tile_id: int, doors: tuple[Direction, ...], tile_effect: TileEffect = TileEffect.NONE,
-                 is_outside_tile: bool = False, is_exit_tile: bool = False, is_entry_tile: bool = False) -> None:
-        self.__id = tile_id
-        self.__doors = doors
-        self.__tile_effect = tile_effect
-        self.__is_outside_tile = is_outside_tile
-        self.__is_exit_tile = is_exit_tile
-        self.__is_entry_tile = is_entry_tile
-        self.__zombie_door = None
-        self.__rotation = Direction.NORTH
-        self.__is_locked = False
+    def __init__(self, tile_id: int, doors: tuple[Direction, ...],
+                 tile_effect: TileEffect = TileEffect.NONE) -> None:
+        self.__id: int = tile_id
+        self.__doors: tuple[Direction, ...] = doors
+        self.__tile_effect: TileEffect = tile_effect
+        self.__zombie_door: Direction | None = None
+        self.__rotation: Direction = Direction.NORTH
+        self.__is_locked: bool = False
+
+    @abstractmethod
+    def is_outside(self) -> bool:
+        """Checks if the tile is outside or inside.
+        Returns:
+            bool: True if outside tile, False otherwise.
+        """
+        raise NotImplementedError(
+            "subclasses of Tile must implement the is_outside method")
+
+    def is_exit(self) -> bool:
+        """Checks if the tile is an exit tile.
+        Returns:
+            bool: True if exit tile, False otherwise.
+        """
+        return False
+
+    def is_entry(self) -> bool:
+        """Checks if the tile is an entry tile.
+        Returns:
+            bool: True if entry tile, False otherwise.
+        """
+        return False
 
     def get_tile_effect(self) -> TileEffect:
         return self.__tile_effect
 
     def get_rotation(self) -> Direction:
         return self.__rotation
-
-    def is_outside(self) -> bool:
-        return self.__is_outside_tile
-
-    def is_exit(self) -> bool:
-        return self.__is_exit_tile
-
-    def is_entry(self) -> bool:
-        return self.__is_entry_tile
 
     def is_locked(self) -> bool:
         return self.__is_locked
@@ -57,7 +67,9 @@ class Tile:
         """
         # adds the rotation to get the correct direction
         door_directions = tuple(
-            map(lambda direction: Direction((direction.value + self.__rotation.value) % 360), self.__doors))
+            map(lambda direction: Direction(
+                (direction.value + self.__rotation.value) % 360),
+                self.__doors))
 
         # adds zombie door direction if not none
         if self.__zombie_door is None:
@@ -87,7 +99,8 @@ class Tile:
         """
         # calculates opposite direction
         opposite_rotation = 180
-        opposite_direction = Direction((direction.value + opposite_rotation) % 360)
+        opposite_direction = Direction(
+            (direction.value + opposite_rotation) % 360)
 
         return self.has_door_in_direction(opposite_direction)
 
@@ -111,4 +124,5 @@ class Tile:
         Returns:
             TileData: Object containing the tiles data.
         """
-        return TileData(self.__id, position, self.__rotation, self.__zombie_door, self.__is_locked)
+        return TileData(self.__id, position, self.__rotation,
+                        self.__zombie_door, self.__is_locked)
