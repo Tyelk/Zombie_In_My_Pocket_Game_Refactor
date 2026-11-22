@@ -8,10 +8,10 @@ class TestTileManager:
     def test_set_randomizer_seed_when_given_valid_value_returns_none(self) -> None:
         # Arrange
         tile_manager = TileManager()
-        invalid_seed = 42
+        valid_seed = 42
 
         # Act
-        result = tile_manager.reset_tile_order(invalid_seed)
+        result = tile_manager.reset_tile_order(valid_seed)
 
         # Assert
         assert result is None
@@ -21,20 +21,23 @@ class TestTileManager:
         tile_manager = TileManager()
         seed = 42
         tile_manager.reset_tile_order(seed)
-        second_inside_tile_id = 2
-        second_outside_tile_id = 10
-        tile_manager.get_next_inside_tile()
-        tile_manager.get_next_outside_tile()
+        expected_inside_ids = [1, 2, 6, 3, 8, 7, 5, 4]
+        expected_outside_ids = [11, 10, 13, 12, 9, 15, 14, 16]
 
         # Act
-        inside_result = tile_manager.get_next_inside_tile()
-        outside_result = tile_manager.get_next_outside_tile()
+        actual_inside_ids: list[int] = []
+        for _ in expected_inside_ids:
+            result = tile_manager.get_next_inside_tile()
+            actual_inside_ids.append(result.get_data().get_data((0, 0)).id)
+
+        actual_outside_ids: list[int] = []
+        for _ in expected_outside_ids:
+            result = tile_manager.get_next_outside_tile()
+            actual_outside_ids.append(result.get_data().get_data((0, 0)).id)
 
         # Assert
-        assert inside_result.is_fail() is False
-        assert outside_result.is_fail() is False
-        assert inside_result.get_data().get_data((0, 0)).id == second_inside_tile_id
-        assert outside_result.get_data().get_data((0, 0)).id == second_outside_tile_id
+        assert actual_inside_ids == expected_inside_ids
+        assert actual_outside_ids == expected_outside_ids
 
     def test_is_inside_tiles_depleted_when_tiles_left_returns_false(self) -> None:
         # Arrange
@@ -92,7 +95,7 @@ class TestTileManager:
         # Assert
         assert result is True
 
-    def test_get_next_inside_tile_when_no_tiles_left_returns_depleted_outside_error(self) -> None:
+    def test_get_next_inside_tile_when_no_tiles_left_returns_depleted_inside_error(self) -> None:
         # Arrange
         tile_manager = TileManager()
         tile_manager.get_next_inside_tile()

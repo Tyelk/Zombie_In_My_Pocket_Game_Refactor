@@ -1,6 +1,7 @@
 import pytest
 
 from zimp.domain.common.direction import Direction
+from zimp.domain.common.tile_effect import TileEffect
 from zimp.domain.map.tile import Tile
 
 
@@ -93,23 +94,40 @@ class TestTile:
         # Assert
         assert test_tile.has_door_in_direction(zombie_door_direction) is True
 
-    def test_reset_clears_data_back_to_default_values(self) -> None:
+    def test_reset_clears_data_back_to_default_values_and_does_not_change_immutable_data(self) -> None:
         # Arrange
+        doors = (Direction.EAST, Direction.WEST)
+        effect = TileEffect.BURY_TOTEM
+        is_outside = True
+        is_exit = False
+        is_entry = False
         default_zombie_door_value = None
-        default_rotation_value = Direction.NORTH
         default_locked_value = False
-        test_tile = Tile(1, (Direction.NORTH,))
+        default_rotation_value = Direction.NORTH
+        test_tile = Tile(1, doors, effect, is_outside, is_exit, is_entry)
         test_tile.add_zombie_door(Direction.NORTH)
-        test_tile.rotate(Direction.WEST)
+        test_tile.rotate(Direction.SOUTH)
         test_tile.lock()
 
         # Act
         test_tile.reset()
-        zombie_door_result = test_tile.get_data((1, 1)).zombie_door
+        first_door_result = test_tile.has_door_in_direction(doors[0])
+        second_door_result = test_tile.has_door_in_direction(doors[1])
+        effect_result = test_tile.get_tile_effect()
+        is_outside_result = test_tile.is_outside()
+        is_exit_result = test_tile.is_exit()
+        is_entry_result = test_tile.is_entry()
         rotation_result = test_tile.get_rotation()
+        zombie_door_result = test_tile.get_data((1, 1)).zombie_door
         locked_result = test_tile.is_locked()
 
         # Assert
-        assert zombie_door_result == default_zombie_door_value
+        assert first_door_result is True
+        assert second_door_result is True
+        assert effect_result == effect
+        assert is_outside_result is True
+        assert is_exit_result is False
+        assert is_entry_result is False
         assert rotation_result == default_rotation_value
+        assert zombie_door_result == default_zombie_door_value
         assert locked_result == default_locked_value
