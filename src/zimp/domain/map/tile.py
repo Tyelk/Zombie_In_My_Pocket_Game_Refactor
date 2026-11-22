@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from zimp.domain.common.direction import Direction
 from zimp.domain.common.tile_data import TileData

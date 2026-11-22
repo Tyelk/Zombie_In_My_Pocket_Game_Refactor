@@ -1,15 +1,15 @@
 import random
 
-from zimp.domain.common.direction import Direction
 from zimp.domain.common.error_code import ErrorCode
 from zimp.domain.common.result import Result
-from zimp.domain.common.tile_effect import TileEffect
+from zimp.domain.map.inside_tile_factory import InsideTileFactory
+from zimp.domain.map.outside_tile_factory import OutsideTileFactory
 from zimp.domain.map.tile import Tile
 from zimp.domain.map.validators import is_valid_seed
 
 
 class TileManager:
-    """TileManager class used to create and randomize map tiles."""
+    """TileManager class used to create and randomise map tiles."""
 
     # class constants
     __MIN_TILE_ID = 1
@@ -25,43 +25,34 @@ class TileManager:
         self.__outside_tile_order: list[int] = []
         self.__INSIDE_TILE_DETAILS: dict[int, Tile] = {}
         self.__OUTSIDE_TILE_DETAILS: dict[int, Tile] = {}
-        self.__tile_randomizer: random.Random = random.Random()  # class specific randomizer
+        self.__tile_randomizer: random.Random = random.Random()  # class specific randomiser
         self.__randomizer_seed: int | None = None
+
+        # setup factories
+        self.__inside_tile_factory = InsideTileFactory()
+        self.__outside_tile_factory = OutsideTileFactory()
 
         # setup tiles
         self.__create_tiles()
         self.reset_tile_order()
 
     def __create_tiles(self) -> None:
-        """Creates inside and outside tile objects."""
-        self.__INSIDE_TILE_DETAILS = {
-            1: Tile(1, (Direction.NORTH,)),
-            2: Tile(2, (Direction.NORTH, Direction.WEST)),
-            3: Tile(3, (Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST), is_exit_tile=True),
-            4: Tile(4, (Direction.NORTH, Direction.EAST, Direction.WEST)),
-            5: Tile(5, (Direction.NORTH,)),
-            6: Tile(6, (Direction.NORTH, Direction.EAST, Direction.WEST), TileEffect.HEALTH),
-            7: Tile(7, (Direction.NORTH,), TileEffect.SEARCH),
-            8: Tile(8, (Direction.EAST, Direction.WEST), TileEffect.FIND_TOTEM)
-        }
-        self.__OUTSIDE_TILE_DETAILS = {
-            1: Tile(9, (Direction.EAST, Direction.SOUTH, Direction.WEST), is_outside_tile=True),
-            2: Tile(10, (Direction.EAST, Direction.SOUTH, Direction.WEST), is_outside_tile=True),
-            3: Tile(11, (Direction.NORTH, Direction.EAST, Direction.SOUTH), is_outside_tile=True, is_entry_tile=True),
-            4: Tile(12, (Direction.SOUTH, Direction.WEST), is_outside_tile=True),
-            5: Tile(13, (Direction.EAST, Direction.SOUTH, Direction.WEST), TileEffect.HEALTH, is_outside_tile=True),
-            6: Tile(14, (Direction.EAST, Direction.SOUTH, Direction.WEST), is_outside_tile=True),
-            7: Tile(15, (Direction.EAST, Direction.SOUTH, Direction.WEST), is_outside_tile=True),
-            8: Tile(16, (Direction.EAST, Direction.SOUTH), TileEffect.BURY_TOTEM, is_outside_tile=True)
-        }
+        """Creates inside and outside tiles."""
+        tile_ids = list(range(self.__MIN_TILE_ID, self.__MAX_TILE_ID))
+        self.__INSIDE_TILE_DETAILS = self.__inside_tile_factory.get_all_tiles(
+            tile_ids)
+        self.__OUTSIDE_TILE_DETAILS = self.__outside_tile_factory.get_all_tiles(
+            tile_ids)
 
     def __shuffle_tile_order(self) -> None:
         """Shuffles order of inside and outside tiles."""
         self.__tile_randomizer.seed(self.__randomizer_seed)
-        inside_random_order = self.__tile_randomizer.sample(range(self.__MIN_TILE_ID, self.__MAX_TILE_ID),
-                                                            k=self.__NUM_OF_TILES)
-        outside_random_order = self.__tile_randomizer.sample(range(self.__MIN_TILE_ID, self.__MAX_TILE_ID),
-                                                             k=self.__NUM_OF_TILES)
+        inside_random_order = self.__tile_randomizer.sample(
+            range(self.__MIN_TILE_ID, self.__MAX_TILE_ID),
+            k=self.__NUM_OF_TILES)
+        outside_random_order = self.__tile_randomizer.sample(
+            range(self.__MIN_TILE_ID, self.__MAX_TILE_ID),
+            k=self.__NUM_OF_TILES)
 
         # add inside/outside starting tiles to the start of each list
         inside_random_order.remove(self.__INSIDE_START_TILE_INDEX)
@@ -72,10 +63,11 @@ class TileManager:
         self.__inside_tile_order = inside_random_order
         self.__outside_tile_order = outside_random_order
 
-    def reset_tile_order(self, randomizer_seed: int | None = None) -> ErrorCode | None:
+    def reset_tile_order(self,
+                         randomizer_seed: int | None = None) -> ErrorCode | None:
         """Resets the order of the inside and outside tiles.
         Args:
-            randomizer_seed (int | None): New randomizer seed value. Defaults to None (random seed).
+            randomizer_seed (int | None): New randomiser seed value. Defaults to None (random seed).
         Returns:
             ErrorCode: If seed was invalid. | None: If nothing went wrong.
         """
@@ -100,10 +92,11 @@ class TileManager:
         Returns:
             bool: True if player has explored all outside tiles, False otherwise.
         """
-        return self.__outside_tile_order_index >= len(self.__outside_tile_order)
+        return self.__outside_tile_order_index >= len(
+            self.__outside_tile_order)
 
     def get_next_inside_tile(self) -> Result:
-        """Gets the next inside tile following the randomized order.
+        """Gets the next inside tile following the randomised order.
         Returns:
             Result: Success - next inside tile. | Fail - ErrorCode.
         """
@@ -121,7 +114,7 @@ class TileManager:
         return Result.success(new_tile)
 
     def get_next_outside_tile(self) -> Result:
-        """Gets the next outside tile following the randomized order.
+        """Gets the next outside tile following the randomised order.
         Returns:
             Result: Success - next outside tile. | Fail - ErrorCode.
         """
