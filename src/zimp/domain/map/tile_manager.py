@@ -23,8 +23,8 @@ class TileManager:
         self.__outside_tile_order_index: int = 0
         self.__inside_tile_order: list[int] = []
         self.__outside_tile_order: list[int] = []
-        self.__INSIDE_TILE_DETAILS: dict[int, Tile] = {}
-        self.__OUTSIDE_TILE_DETAILS: dict[int, Tile] = {}
+        self.__inside_tile_details: dict[int, Tile] = {}
+        self.__outside_tile_details: dict[int, Tile] = {}
         self.__tile_randomizer: random.Random = random.Random()  # class specific randomiser
         self.__randomizer_seed: int | None = None
 
@@ -39,9 +39,9 @@ class TileManager:
     def __create_tiles(self) -> None:
         """Creates inside and outside tiles."""
         tile_ids = list(range(self.__MIN_TILE_ID, self.__MAX_TILE_ID))
-        self.__INSIDE_TILE_DETAILS = self.__inside_tile_factory.get_all_tiles(
+        self.__inside_tile_details = self.__inside_tile_factory.get_all_tiles(
             tile_ids)
-        self.__OUTSIDE_TILE_DETAILS = self.__outside_tile_factory.get_all_tiles(
+        self.__outside_tile_details = self.__outside_tile_factory.get_all_tiles(
             tile_ids)
 
     def __shuffle_tile_order(self) -> None:
@@ -105,7 +105,7 @@ class TileManager:
 
         # gets next tile
         index = self.__inside_tile_order[self.__inside_tile_order_index]
-        new_tile = self.__INSIDE_TILE_DETAILS.get(index)
+        new_tile = self.__inside_tile_details.get(index)
         if new_tile is None:
             return Result.fail(ErrorCode.FATAL_ERROR)
 
@@ -123,7 +123,7 @@ class TileManager:
 
         # gets next tile
         index = self.__outside_tile_order[self.__outside_tile_order_index]
-        new_tile = self.__OUTSIDE_TILE_DETAILS.get(index)
+        new_tile = self.__outside_tile_details.get(index)
         if new_tile is None:
             return Result.fail(ErrorCode.FATAL_ERROR)
 
