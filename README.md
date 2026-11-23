@@ -6,7 +6,7 @@ This repository contains the Zombie In My Pocket (ZIMP) game created by "Just a 
 
 - Python 3.12 or later
 - Tkinter
-- pytest
+- pytest & coverage
 
 ## Git Clone
 ```powershell
@@ -45,9 +45,17 @@ pytest --cov=zimp
 ```
 
 ## Create Branch Coverage Report
-
+### Full Report
 ```powershell
 pytest --cov=src/zimp --cov-branch --cov-report=html
+```
+### Focused Refactor Report (only tests that focus on the implemented design pattern)
+```powershell
+pytest --cov=src/zimp tests/test_map/test_tile.py tests/test_map/test_tile_manager.py tests/test_map/test_inside_tile.py tests/test_map/test_inside_tile_factory.py tests/test_map/test_outside_tile.py tests/test_map/test_outside_tile_factory.py --cov-branch --cov-report=html
+```
+### Tile/Tile Manager Report (only tile/tile manager classes and tests)
+```powershell
+pytest --cov=zimp.domain.map.tile --cov=zimp.domain.map.tile_manager tests/test_map/test_tile.py tests/test_map/test_tile_manager.py --cov-branch --cov-report=html
 ```
 
 ## Run App
